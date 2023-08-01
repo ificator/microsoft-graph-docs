@@ -35,7 +35,17 @@ This creates a temporary storage location where the bytes of the file will be sa
 Once the last byte of the file has been uploaded the upload session is completed and the final file is shown in the destination folder.
 Alternatively, you can defer final creation of the file in the destination until you explicitly make a request to complete the upload, by setting the `deferCommit` property in the request arguments.
 
-### HTTP request
+To upload a new file both the parent's id and new file name will need to be provided in the request, however an update only requires the id of the item to update.
+
+### Request endpoints - Create
+
+<!-- { "blockType": "ignored" } -->
+
+```http
+POST /me/drive/items/{parentItemId}:/{fileName}:/createUploadSession
+```
+
+### Request endpoints - Update
 
 <!-- { "blockType": "ignored" } -->
 
@@ -43,10 +53,17 @@ Alternatively, you can defer final creation of the file in the destination until
 POST /drives/{driveId}/items/{itemId}/createUploadSession
 POST /groups/{groupId}/drive/items/{itemId}/createUploadSession
 POST /me/drive/items/{itemId}/createUploadSession
-POST /me/drive/items/{itemId}:/{fileName}:/createUploadSession
+POST /me/drive/items/{parentItemId}:/{fileName}:/createUploadSession
 POST /sites/{siteId}/drive/items/{itemId}/createUploadSession
 POST /users/{userId}/drive/items/{itemId}/createUploadSession
 ```
+
+### Request headers
+
+| Name       | Value | Description                                                                                                                                                            |
+|:-----------|:------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *if-match* | etag  | If this request header is included and the eTag (or cTag) provided does not match the current etag on the item, a `412 Precondition Failed` error response is returned. |
+| *if-none-match* | etag | If this request header is included and the eTag (or cTag) provided matches the current etag on the item, a `412 Precondition Failed` error response is returned. |
 
 ### Request body
 
@@ -284,7 +301,7 @@ Content-Type: application/json
 {
   "error":
   {
-    "code": "upload_name_conflict",
+    "code": "nameAlreadyExists",
     "message": "Another file exists with the same name as the uploaded session. You can redirect the upload session to use a new filename by calling PUT with the new metadata and @microsoft.graph.sourceUrl attribute.",
   }
 }
